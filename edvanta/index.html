@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Code Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: green;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .title {
+            font-size: 24px;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .nav-button {
+            background-color: green;
+            color: #fff;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .nav-button:hover {
+            background-color: black;
+        }
+
+        .section-title {
+            font-size: 20px;
+            padding: 10px;
+            background-color: black;
+            color: #fff;
+            margin: 0;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            margin: 10px;
+            border: 1px solid black;
+        }
+
+        .code-editor {
+            flex: 1;
+            background-color: #f7f7f7;
+            padding: 20px;
+            font-family: monospace;
+            margin: 10px;
+        }
+
+        .output-container {
+            flex: 1;
+            background-color: #f7f7f7;
+            padding: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin: 10px;
+        }
+
+        .run-button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .run-button:hover {
+            background-color: #0056b3;
+        }
+
+        .lock-button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .lock-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Code Editor</div>
+    </div>
+    <div class="navbar">
+        <button class="nav-button" id="runButton">Run</button>
+        <button class="nav-button">Save</button>
+        <button class="nav-button">Copy</button>
+        <button class="nav-button" id="lockButton">Lock</button>
+        <button class="nav-button" id="clearButton">Clear</button>
+    </div>
+    <div class="editor-container">
+        <div class="code-editor">
+            <h3 class="section-title">Code Editor</h3>
+            <div contenteditable="true">
+                // Write your code here
+            </div>
+        </div>
+        <div class="output-container">
+            <div>
+                <h3 class="section-title">Output</h3>
+                <div class="output">
+                    <!-- Output will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const codeEditor = document.querySelector('.code-editor > div');
+        const output = document.querySelector('.output');
+        const runButton = document.getElementById('runButton');
+        const lockButton = document.getElementById('lockButton');
+        const clearButton = document.getElementById('clearButton');
+        let isLocked = false;
+
+        runButton.addEventListener('click', () => {
+            if (!isLocked) {
+                const code = codeEditor.innerText;
+                output.innerText = evaluateCode(code);
+            }
+        });
+
+        lockButton.addEventListener('click', () => {
+            isLocked = !isLocked;
+            lockButton.innerText = isLocked ? 'Unlock' : 'Lock';
+        });
+
+        clearButton.addEventListener('click', () => {
+            codeEditor.innerText = ''; // Clear the code editor
+            output.innerText = ''; // Clear the output
+        });
+
+        // Handle Tab key for basic indentation
+        codeEditor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab' && !isLocked) {
+                e.preventDefault();
+                const start = codeEditor.selectionStart;
+                const end = codeEditor.selectionEnd;
+                codeEditor.value = codeEditor.value.substring(0, start) + '\t' + codeEditor.value.substring(end);
+                codeEditor.selectionStart = codeEditor.selectionEnd = start + 1;
+            }
+        });
+
+        function evaluateCode(code) {
+            try {
+                const result = eval(code);
+                return result !== undefined ? result : 'undefined';
+            } catch (error) {
+                return error.message;
+            }
+        }
+    </script>
+</body>
+</html>
